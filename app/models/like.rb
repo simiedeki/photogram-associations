@@ -16,31 +16,14 @@ class Like < ApplicationRecord
     :uniqueness => { :scope => [:fan_id] }
   })
 
-  # Association accessor methods to define:
-  
-  ## Direct associations
+   validates :fan_id, presence: true   # Validate presence of fan_id instead of fan
+  validates :photo_id, presence: true # Validate presence of photo_id instead of photo
+  validates :photo_id, uniqueness: { scope: :fan_id } # Ensure a fan can only like a photo once
 
-  # Like#fan: returns a row from the users table associated to this like by the fan_id column
+  # Direct associations
+  belongs_to :fan,
+             class_name: 'User',
+             foreign_key: 'fan_id'
 
-  # Like#photo: returns a row from the photo table associated to this like by the photo_id column
-
-  def fan
-    my_fan_id = self.fan_id
-
-    matching_users = User.where({ :id => my_fan_id })
-
-    the_user = matching_users.at(0)
-
-    return the_user
-  end
-
-  def photo
-    my_photo_id = self.photo_id
-
-    matching_photos = Photo.where({ :id => my_photo_id })
-
-    the_photo = matching_photos.at(0)
-
-    return the_photo
-  end
+belongs_to :photo, class_name: 'Photo', foreign_key: 'photo_id'
 end
